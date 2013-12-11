@@ -28,6 +28,7 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
     SIZE_T read;
 
     unsigned char* data;
+    int result = ERROR_SUCCESS;
 
     SYSTEM_INFO si;
     MEMORY_BASIC_INFORMATION mbi;
@@ -37,8 +38,8 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
 
     TOKEN_PRIVILEGES tokenPriv;
     LUID luidDebug;
-    HANDLE hProcess;
-    HANDLE hToken;
+    HANDLE hProcess = NULL;
+    HANDLE hToken = NULL;
 
     if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken) &&
         LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &luidDebug))
@@ -56,6 +57,9 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
 
     if (hProcess == NULL)
     {
+        if (hToken != NULL)
+          CloseHandle(hToken);
+
         return ERROR_COULD_NOT_ATTACH_TO_PROCESS;
     }
 
@@ -71,7 +75,10 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
             data = (unsigned char*) yr_malloc(mbi.RegionSize);
 
             if (data == NULL)
-                return ERROR_INSUFICIENT_MEMORY;
+            {
+                result = ERROR_INSUFICIENT_MEMORY;
+                break;
+            }
 
             if (ReadProcessMemory(hProcess, mbi.BaseAddress, data, mbi.RegionSize, &read))
             {
@@ -80,7 +87,8 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
                 if (new_block == NULL)
                 {
                     yr_free(data);
-                    return ERROR_INSUFICIENT_MEMORY;
+                    result = ERROR_INSUFICIENT_MEMORY;
+                    break;
                 }
 
                 if (*first_block == NULL)
@@ -105,7 +113,13 @@ int get_process_memory(int pid, MEMORY_BLOCK** first_block)
         address = (PVOID)((ULONG_PTR) mbi.BaseAddress + mbi.RegionSize);
     }
 
-    return ERROR_SUCCESS;
+    if (hToken != NULL)
+        CloseHandle(hToken);
+
+    if (hProcess != NULL)
+        CloseHandle(hProcess);
+
+    return result;
 }
 
 #else
