@@ -766,8 +766,9 @@ char* yr_get_error_message(YARA_CONTEXT* context, char* buffer, int buffer_size)
 			break;
 		case ERROR_INCLUDES_CIRCULAR_REFERENCE:
 		    snprintf(buffer, buffer_size, "include circular reference");
-                case ERROR_INCLUDE_DEPTH_EXCEEDED:
-                    snprintf(buffer, buffer_size, "too many levels of included rules");
+            break;
+        case ERROR_INCLUDE_DEPTH_EXCEEDED:
+            snprintf(buffer, buffer_size, "too many levels of included rules");
             break;
 	}
 
