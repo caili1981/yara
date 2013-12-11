@@ -799,35 +799,37 @@ int find_matches_for_strings(   STRING_LIST_ENTRY* first_string,
         {
             string->flags |= STRING_FLAGS_FOUND;
             match = (MATCH*) yr_malloc(sizeof(MATCH));
-            match->data = (unsigned char*) yr_malloc(len);
 
-            if (match != NULL && match->data != NULL)
+            if (match == NULL)
             {
-                match->offset = current_offset;
-                match->length = len;
-                match->next = NULL;
-
-                memcpy(match->data, buffer, len);
-
-                if (string->matches_head == NULL)
-                {
-                    string->matches_head = match;
-                }
-
-                if (string->matches_tail != NULL)
-                {
-                    string->matches_tail->next = match;
-                }
-
-                string->matches_tail = match;
-            }
-            else
-            {
-                if (match != NULL)
-                    yr_free(match);
-
                 return ERROR_INSUFICIENT_MEMORY;
             }
+
+            match->data = (unsigned char*) yr_malloc(len);
+
+            if (match->data == NULL)
+            {
+                yr_free(match);
+                return ERROR_INSUFICIENT_MEMORY;
+            }
+
+            match->offset = current_offset;
+            match->length = len;
+            match->next = NULL;
+
+            memcpy(match->data, buffer, len);
+
+            if (string->matches_head == NULL)
+            {
+                string->matches_head = match;
+            }
+
+            if (string->matches_tail != NULL)
+            {
+                string->matches_tail->next = match;
+            }
+
+            string->matches_tail = match;
         }
     }
 
