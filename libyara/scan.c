@@ -145,7 +145,7 @@ inline int icompare(char* str1, char* str2, int len)
     char* s2 = str2;
     int i = 0;
 
-    while (i < len && lowercase[*s1++] == lowercase[*s2++])
+    while (i < len && lowercase[(unsigned char) *s1++] == lowercase[(unsigned char) *s2++])
     {
         i++;
     }
@@ -180,7 +180,7 @@ inline int wicompare(char* str1, char* str2, int len)
     char* s2 = str2;
     int i = 0;
 
-    while (i < len && lowercase[*s1] == lowercase[*s2])
+    while (i < len && lowercase[(unsigned char) *s1] == lowercase[(unsigned char) *s2])
     {
         s1++;
         s2+=2;
