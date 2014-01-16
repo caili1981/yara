@@ -831,7 +831,7 @@ TERM* range_next(TERM_ITERABLE* self, EVALUATION_FUNCTION evaluate, EVALUATION_C
 {
     TERM_RANGE* range = (TERM_RANGE*) self;
 
-    if (range->current->value < evaluate(range->max, context))
+    if ((long long) range->current->value < evaluate(range->max, context))
     {
         range->current->value++;
         return (TERM*) range->current;
