@@ -41,4 +41,9 @@ int sized_string_cmp(
   SIZED_STRING* s1,
   SIZED_STRING* s2);
 
+
+int sized_string_contains(
+  SIZED_STRING* s1,
+  SIZED_STRING* s2);
+
 #endif

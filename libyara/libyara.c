@@ -20,6 +20,7 @@ limitations under the License.
 
 #include <yara/error.h>
 #include <yara/re.h>
+#include <yara/strutils.h>
 #include <yara/modules.h>
 #include <yara/mem.h>
 
@@ -43,9 +44,6 @@ pthread_key_t recovery_state_key;
 #endif
 
 static int init_count = 0;
-
-char lowercase[256];
-char altercase[256];
 
 #ifdef HAVE_LIBCRYPTO
 pthread_mutex_t *locks;
@@ -105,6 +103,7 @@ YR_API int yr_initialize(void)
 
   #ifdef HAVE_LIBCRYPTO
   locks = OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+
   for (i = 0; i < CRYPTO_num_locks(); i++)
     pthread_mutex_init(&locks[i], NULL);
 
@@ -155,6 +154,7 @@ YR_API int yr_finalize(void)
   #ifdef HAVE_LIBCRYPTO
   for (i = 0; i < CRYPTO_num_locks(); i ++)
     pthread_mutex_destroy(&locks[i]);
+
   OPENSSL_free(locks);
   #endif
 

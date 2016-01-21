@@ -21,6 +21,10 @@ limitations under the License.
 
 #include "config.h"
 
+char lowercase[256];
+char altercase[256];
+
+
 uint64_t xtoi(
     const char* hexstr)
 { 
@@ -211,31 +215,3 @@ size_t strlcpy_w(
 
   return (s - w_src) / 2;
 }
-
-
-#if !HAVE_MEMMEM && !defined(memmem)
-void* memmem(
-    const void *haystack,
-    size_t haystack_size,
-    const void *needle,
-    size_t needle_size)
-{
-  char *sp = (char *) haystack;
-  char *pp = (char *) needle;
-  char *eos = sp + haystack_size - needle_size;
-
-  if (haystack == NULL || haystack_size == 0 ||
-      needle == NULL || needle_size == 0)
-    return NULL;
-
-  while (sp <= eos)
-  {
-    if (*sp == *pp && memcmp(sp, pp, needle_size) == 0)
-      return sp;
-
-    sp++;
-  }
-
-  return NULL;
-}
-#endif

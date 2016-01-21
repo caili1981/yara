@@ -103,7 +103,7 @@ ACX_PTHREAD(
 
 AC_CHECK_LIB(m, isnan)
 AC_CHECK_LIB(m, log2)
-AC_CHECK_FUNCS([strlcpy strlcat memmem timegm])
+AC_CHECK_FUNCS([strlcpy strlcat timegm])
 
 AM_CONDITIONAL([CUCKOO], [test x$build_cuckoo_module = xtrue])
 AM_CONDITIONAL([MAGIC], [test x$build_magic_module = xtrue])

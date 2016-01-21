@@ -30,6 +30,10 @@ limitations under the License.
 #endif
 
 
+extern char lowercase[256];
+extern char altercase[256];
+
+
 uint64_t xtoi(
     const char* hexstr);
 
@@ -47,15 +51,6 @@ size_t strlcat(
     char *dst,
     const char *src,
     size_t size);
-#endif
-
-
-#if !HAVE_MEMMEM && !defined(memmem)
-void* memmem(
-    const void *haystack,
-    size_t haystack_size,
-    const void *needle,
-    size_t needle_size);
 #endif
 
 

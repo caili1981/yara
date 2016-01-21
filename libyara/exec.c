@@ -808,8 +808,8 @@ int yr_execute_code(
         ensure_defined(r1);
         ensure_defined(r2);
 
-        r1.i = memmem(r1.ss->c_string, r1.ss->length,
-                      r2.ss->c_string, r2.ss->length) != NULL;
+        r1.i = sized_string_contains(r1.ss, r2.ss);
+
         push(r1);
         break;
 
