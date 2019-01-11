@@ -236,7 +236,7 @@ struct YR_NAMESPACE
   DECLARE_REFERENCE(char*, name);
 };
 
-
+/* rule的 META 部分 */
 struct YR_META
 {
   int32_t type;
@@ -322,6 +322,7 @@ struct YR_AC_MATCH
   uint16_t backtrack;
 
   DECLARE_REFERENCE(YR_STRING*, string);
+  /* forward_code/backward_code 设置了执行码 */
   DECLARE_REFERENCE(const uint8_t*, forward_code);
   DECLARE_REFERENCE(const uint8_t*, backward_code);
   DECLARE_REFERENCE(YR_AC_MATCH*, next);
@@ -524,18 +525,32 @@ struct YR_AC_AUTOMATON
   YR_AC_STATE* root;
 };
 
+/*
+ * 从原则上来讲，
+ * YR_RULES保存的是静态数据，例如rule.
+ * YR_SCANNER保存的是动态数据，也就是扫描上下文
+ */
 
 struct YR_RULES
 {
   unsigned char tidx_mask[YR_BITARRAY_NCHARS(YR_MAX_THREADS)];
-  const uint8_t* code_start;
+  const uint8_t* code_start;  /* hash等函数的执行码 */
 
   YR_MUTEX mutex;
   YR_ARENA* arena;
-  YR_RULE* rules_list_head;
+  YR_RULE* rules_list_head;   /* rule 数组, 以gflag &= 0x1000 结束*/
   YR_EXTERNAL_VARIABLE* externals_list_head;
-  YR_AC_TRANSITION_TABLE ac_transition_table;
-  YR_AC_MATCH_TABLE ac_match_table;
+  YR_AC_TRANSITION_TABLE ac_transition_table;  /* aho-corasick 状态转换表, 这是一个经典的状态转换表 */
+  /* 
+   *  静态匹配表, 里面有rule的匹配函数, 每个state会对应一个match_entry 
+   *  通过此方式获得: match = rules->ac_match_table[state] 
+   *  每个condition，而并非每个rule对应一个match entry 
+   *  通过YR_AC_MATCH可以获得string, 通过string可以找到这个string所
+   *  在什么地方match的。 YR_STRING->matches[thread_idx]这个list里有保存.
+   *  这个list实际所占用的memory保存在scanner->matches_arena; 
+   *  因为这个match上下文是动态的
+   */
+  YR_AC_MATCH_TABLE ac_match_table;  
 
   // Size of ac_match_table and ac_transition_table in number of items (both
   // tables have the same numbe of items).
@@ -657,6 +672,7 @@ struct YR_SCAN_CONTEXT
 
   // Arena used for storing pointers to the YR_STRING struct for each matching
   // string. The pointers are used by _yr_scanner_clean_matches.
+  /* 只存放存放指针 */
   YR_ARENA* matching_strings_arena;
 
   // Stopwatch used for measuring the time elapsed during the scan.
