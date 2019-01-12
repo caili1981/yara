@@ -153,6 +153,12 @@ static void _yr_scanner_clean_matches(
       (*string)->unconfirmed_matches[tidx].head = NULL;
       (*string)->unconfirmed_matches[tidx].tail = NULL;
 
+      /*
+       * matching_string_arena 保存的是string的指针, 
+       *  指向的是YR_MATCH所对应的字符串, 所以必须清空其所对应的match上下文
+       * 上下文无需清空，因为这是保存在scanner->matches_arena里的
+       * matches_arena会在yr_scanner_scan_mem_blocks里初始化
+       */
       string = (YR_STRING**) yr_arena_next_address(
           scanner->matching_strings_arena,
           string,

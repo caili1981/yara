@@ -261,18 +261,18 @@ struct YR_STRING
   int32_t g_flags;
   int32_t length;
 
-  DECLARE_REFERENCE(char*, identifier);
-  DECLARE_REFERENCE(uint8_t*, string);
-  DECLARE_REFERENCE(YR_STRING*, chained_to);
-  DECLARE_REFERENCE(YR_RULE*, rule);
+  DECLARE_REFERENCE(char*, identifier);  /* match string的变量名 */
+  DECLARE_REFERENCE(uint8_t*, string);   /* match pattern */
+  DECLARE_REFERENCE(YR_STRING*, chained_to);  /* 正则表达式相关 */
+  DECLARE_REFERENCE(YR_RULE*, rule);     /* match rule */
 
   int32_t chain_gap_min;
   int32_t chain_gap_max;
 
   int64_t fixed_offset;
 
-  YR_MATCHES matches[YR_MAX_THREADS];
-  YR_MATCHES unconfirmed_matches[YR_MAX_THREADS];
+  YR_MATCHES matches[YR_MAX_THREADS]; /*这个string所对应的match上下文*/
+  YR_MATCHES unconfirmed_matches[YR_MAX_THREADS]; /* 和chained_to 相关 */
 };
 
 
@@ -283,8 +283,8 @@ struct YR_RULE
 
   DECLARE_REFERENCE(const char*, identifier);
   DECLARE_REFERENCE(const char*, tags);
-  DECLARE_REFERENCE(YR_META*, metas);
-  DECLARE_REFERENCE(YR_STRING*, strings);
+  DECLARE_REFERENCE(YR_META*, metas);   /* meta data of the rule */
+  DECLARE_REFERENCE(YR_STRING*, strings); /* string的数组 */
   DECLARE_REFERENCE(YR_NAMESPACE*, ns);
 
   // Number of atoms generated for this rule.
@@ -534,7 +534,7 @@ struct YR_AC_AUTOMATON
 struct YR_RULES
 {
   unsigned char tidx_mask[YR_BITARRAY_NCHARS(YR_MAX_THREADS)];
-  const uint8_t* code_start;  /* hash等函数的执行码 */
+  const uint8_t* code_start;  /* hash等函数的执行码????? */
 
   YR_MUTEX mutex;
   YR_ARENA* arena;

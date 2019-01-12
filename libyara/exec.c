@@ -202,6 +202,7 @@ int yr_execute_code(
   YR_VALUE r3;
 
   uint64_t elapsed_time;
+  uint64_t loop_times = 0;
 
   #ifdef PROFILING_ENABLED
   uint64_t start_time;
@@ -250,6 +251,7 @@ int yr_execute_code(
   {
     opcode = *ip;
     ip++;
+    loop_times ++;
 
     switch(opcode)
     {
@@ -834,7 +836,7 @@ int yr_execute_code(
 
         while (!is_undef(r1))
         {
-          if (r1.s->matches[tidx].tail != NULL)
+          if (r1.s->matches[tidx].tail != NULL)  /* 如果存在match上下文 */
             found++;
           count++;
           pop(r1);
@@ -1291,6 +1293,10 @@ int yr_execute_code(
   yr_arena_destroy(obj_arena);
   yr_modules_unload_all(context);
   yr_free(stack);
+
+#if 0
+  printf("loop_times = %lu\n", loop_times);
+#endif
 
   return result;
 }
