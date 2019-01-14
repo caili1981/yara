@@ -1467,6 +1467,7 @@ int yr_atoms_extract_from_re(
 // Extract atoms from a string.
 //
 
+/* atoms是什么意思??? */
 int yr_atoms_extract_from_string(
     YR_ATOMS_CONFIG* config,
     uint8_t* string,

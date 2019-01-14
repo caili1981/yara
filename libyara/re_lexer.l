@@ -614,7 +614,7 @@ int yr_parse_re_string(
   FAIL_ON_ERROR(yr_re_ast_create(re_ast));
 
   yylex_init(&yyscanner);
-  yyset_extra(*re_ast, yyscanner);
+  yyset_extra(*re_ast, yyscanner);  /* yyget_extra 可以获得re_ast */
   yy_scan_string(re_string, yyscanner);
   yyparse(yyscanner, &lex_env);
   yylex_destroy(yyscanner);

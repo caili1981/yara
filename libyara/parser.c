@@ -288,6 +288,7 @@ int yr_parser_lookup_loop_variable(
 }
 
 
+/* 将string字符串写入strings_arena */
 static int _yr_parser_write_string(
     const char* identifier,
     int flags,
@@ -321,7 +322,7 @@ static int _yr_parser_write_string(
   if (result != ERROR_SUCCESS)
     return result;
 
-  result = yr_arena_write_string(
+  result = yr_arena_write_string(  /* 写id */
       compiler->sz_arena,
       identifier,
       &(*string)->identifier);
@@ -332,6 +333,7 @@ static int _yr_parser_write_string(
   if (flags & STRING_GFLAGS_HEXADECIMAL ||
       flags & STRING_GFLAGS_REGEXP)
   {
+    /* 若这个正则表达式是纯文本串, 则提取出来 */
     literal_string = yr_re_ast_extract_literal(re_ast);
 
     if (literal_string != NULL)
@@ -360,14 +362,14 @@ static int _yr_parser_write_string(
   (*string)->fixed_offset = UNDEFINED;
   (*string)->rule = compiler->current_rule;
 
-  memset((*string)->matches, 0,
+  memset((*string)->matches, 0,    /* 初始化match的上下文 */
          sizeof((*string)->matches));
 
   memset((*string)->unconfirmed_matches, 0,
          sizeof((*string)->unconfirmed_matches));
 
-  if (flags & STRING_GFLAGS_LITERAL)
-  {
+  if (flags & STRING_GFLAGS_LITERAL) 
+  { /* 将提取的纯文本字符串写入sz_arena */
     (*string)->length = (uint32_t) literal_string->length;
 
     result = yr_arena_write_data(
@@ -389,6 +391,9 @@ static int _yr_parser_write_string(
   }
   else
   {
+    /*
+     * 将正则表达式的执行码存入arena, 并放入re_ast->forward_code/backward_code指针里
+     */
     // Emit forwards code
     result = yr_re_ast_emit_code(re_ast, compiler->re_code_arena, false);
 
@@ -397,6 +402,7 @@ static int _yr_parser_write_string(
       result = yr_re_ast_emit_code(re_ast, compiler->re_code_arena, true);
 
     if (result == ERROR_SUCCESS)
+      /* 根据正则表达式提取atoms, atoms是一个原子字符串组成的树形结构 */
       result = yr_atoms_extract_from_re(
           &compiler->atoms_config,
           re_ast,
@@ -451,6 +457,7 @@ static int _yr_parser_write_string(
 #include <yara/integers.h>
 
 
+/* 字符串解析主要入口函数 */
 int yr_parser_reduce_string_declaration(
     yyscan_t yyscanner,
     int32_t string_flags,
@@ -480,7 +487,7 @@ int yr_parser_reduce_string_declaration(
   // Determine if a string with the same identifier was already defined
   // by searching for the identifier in string_table.
 
-  *string = (YR_STRING*) yr_hash_table_lookup(
+  *string = (YR_STRING*) yr_hash_table_lookup( /* 是否id重复 */
       compiler->strings_table,
       identifier,
       NULL);
@@ -538,6 +545,7 @@ int yr_parser_reduce_string_declaration(
   if (string_flags & STRING_GFLAGS_HEXADECIMAL ||
       string_flags & STRING_GFLAGS_REGEXP)
   {
+    /* 正则表达式或者十六进制表达式 */
     if (string_flags & STRING_GFLAGS_HEXADECIMAL)
       result = yr_re_parse_hex(str->c_string, &re_ast, &re_error);
     else
@@ -633,7 +641,7 @@ int yr_parser_reduce_string_declaration(
     aux_string = *string;
 
     while (remainder_re_ast != NULL)
-    {
+    {  /* chained string 可能会是多个，while循环，将所有chained string找出来 */
       // Destroy regexp pointed by 're_ast' before yr_re_split_at_chaining_point
       // overwrites 're_ast' with another value.
 
@@ -677,7 +685,7 @@ int yr_parser_reduce_string_declaration(
     }
   }
   else
-  {
+  {  /* 普通字符串表达式 */
     result = _yr_parser_write_string(
         identifier,
         string_flags,

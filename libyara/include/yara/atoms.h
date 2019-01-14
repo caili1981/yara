@@ -47,6 +47,9 @@ typedef struct YR_ATOM_QUALITY_TABLE_ENTRY YR_ATOM_QUALITY_TABLE_ENTRY;
 typedef struct YR_ATOMS_CONFIG YR_ATOMS_CONFIG;
 
 
+/* 
+ * aho-corasick 算法利用YR_ATOM创建状态机，并进行压缩 
+ */
 struct YR_ATOM
 {
   uint8_t length;
@@ -75,6 +78,10 @@ struct YR_ATOM_TREE
 };
 
 
+/*
+ * re_ast可以解析出YR_ATOM 串, 利用此串来进行
+ * aho-corasick树的创建
+ */
 struct YR_ATOM_LIST_ITEM
 {
   YR_ATOM atom;

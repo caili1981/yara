@@ -372,7 +372,7 @@ SIZED_STRING* yr_re_ast_extract_literal(
       child = child->prev_sibling;
     }
 
-    if (child != NULL)
+    if (child != NULL)   /* 如果re_ast内部含有正则表达式, 则child!=NULL, 此处会返回*/
       return NULL;
   }
   else

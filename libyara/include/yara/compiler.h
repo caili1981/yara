@@ -92,7 +92,7 @@ typedef struct _YR_COMPILER
   YR_ARENA*         rules_arena;
   YR_ARENA*         strings_arena;
   YR_ARENA*         code_arena;
-  YR_ARENA*         re_code_arena;
+  YR_ARENA*         re_code_arena;  /* 正则表达式的存储位置 */
   YR_ARENA*         compiled_rules_arena;
   YR_ARENA*         externals_arena;
   YR_ARENA*         namespaces_arena;

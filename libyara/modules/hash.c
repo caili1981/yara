@@ -197,7 +197,7 @@ define_function(data_md5)
   if (offset < 0 || length < 0 || offset < block->base)
     return_string(UNDEFINED);
 
-  cached_ascii_digest = get_from_cache(
+  cached_ascii_digest = get_from_cache(   /* 寻找是否已经存在摘要 */
       module(), "md5", arg_offset, arg_length);
 
   if (cached_ascii_digest != NULL)
@@ -248,7 +248,7 @@ define_function(data_md5)
 
   digest_to_ascii(digest, digest_ascii, YR_MD5_LEN);
 
-  FAIL_ON_ERROR(
+  FAIL_ON_ERROR(   /* 每次计算完会将md5加入到 cache中，以便下一次的查找 */
       add_to_cache(module(), "md5", arg_offset, arg_length, digest_ascii));
 
   return_string(digest_ascii);

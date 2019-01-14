@@ -275,12 +275,12 @@ import
 
 
 rule
-    : rule_modifiers _RULE_ _IDENTIFIER_
+    : rule_modifiers _RULE_ _IDENTIFIER_   /* global/private rule <rule_name> */
       {
-        fail_if_error(yr_parser_reduce_rule_declaration_phase_1(
+        fail_if_error(yr_parser_reduce_rule_declaration_phase_1( /* rule初始化第一步 */
             yyscanner, (int32_t) $1, $3, &$<rule>$));
       }
-      tags '{' meta strings
+      tags '{' meta strings    /* strings: 特征码的定义 */
       {
         YR_RULE* rule = $<rule>4; // rule created in phase 1
 
@@ -288,9 +288,9 @@ rule
         rule->metas = $7;
         rule->strings = $8;
       }
-      condition '}'
+      condition '}'   /* conditions */
       {
-        int result = yr_parser_reduce_rule_declaration_phase_2(
+        int result = yr_parser_reduce_rule_declaration_phase_2( /* read rule第二步 */
             yyscanner, $<rule>4); // rule created in phase 1
 
         yr_free($3);
@@ -333,7 +333,7 @@ meta
     ;
 
 
-strings
+strings    /* 特征码的定义, 这是yara-rule最重要的地方 */
     : /* empty */
       {
         $$ = NULL;
@@ -538,13 +538,13 @@ string_declarations
     ;
 
 
-string_declaration
+string_declaration    /* 特征码的定义 */
     : _STRING_IDENTIFIER_ '='
       {
         compiler->current_line = yyget_lineno(yyscanner);
       }
       _TEXT_STRING_ string_modifiers
-      {
+      {   /* 普通字符串 */
         int result = yr_parser_reduce_string_declaration(
             yyscanner, (int32_t) $5, $1, $4, &$$);
 
@@ -559,7 +559,7 @@ string_declaration
         compiler->current_line = yyget_lineno(yyscanner);
       }
       _REGEXP_ string_modifiers
-      {
+      {  /* 正则表达式 */
         int result = yr_parser_reduce_string_declaration(
             yyscanner, (int32_t) $5 | STRING_GFLAGS_REGEXP, $1, $4, &$$);
 
@@ -571,7 +571,7 @@ string_declaration
         compiler->current_line = 0;
       }
     | _STRING_IDENTIFIER_ '=' _HEX_STRING_
-      {
+      {  /* 十六进制字符串 */
         int result = yr_parser_reduce_string_declaration(
             yyscanner, STRING_GFLAGS_HEXADECIMAL, $1, $3, &$$);
 
@@ -589,7 +589,7 @@ string_modifiers
     ;
 
 
-string_modifier
+string_modifier    /* 字符串修饰符 */
     : _WIDE_        { $$ = STRING_GFLAGS_WIDE; }
     | _ASCII_       { $$ = STRING_GFLAGS_ASCII; }
     | _NOCASE_      { $$ = STRING_GFLAGS_NO_CASE; }
@@ -952,7 +952,7 @@ regexp
     ;
 
 
-boolean_expression
+boolean_expression   /* rule的表达式 */
     : expression
       {
         if ($1.type == EXPRESSION_TYPE_STRING)

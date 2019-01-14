@@ -401,8 +401,8 @@ struct RE_NODE
   RE_NODE* prev_sibling;
   RE_NODE* next_sibling;
 
-  uint8_t* forward_code;
-  uint8_t* backward_code;
+  uint8_t* forward_code;   /* re执行码, 指向re_code_arena的一块区域 */
+  uint8_t* backward_code;  
 };
 
 
@@ -537,7 +537,23 @@ struct YR_RULES
   const uint8_t* code_start;  /* hash等函数的执行码????? */
 
   YR_MUTEX mutex;
-  YR_ARENA* arena;
+  /* 
+   * arena 从 compiler->compiled_rules_arena 获得 
+   * compiled_rules_arena 是由
+   *    0. YARA_RULES_FILE_HEADER
+   *    1. code_arena  ====> code_start 从这里获得
+   *    2. re_code_arena  ====> 正则表达式 
+   *    3. rules_arena   ====> 存放rule (YR_RULE)
+   *    4. strings_arena  ====> 匹配字符串(YR_STRING)
+   *    5. external_arena
+   *    6. namespace_arena
+   *    7. metas_arena
+   *    8. sz_arena
+   *    9. automaton_arena
+   *    10.matches_arena 
+   * 合并而成
+   */
+  YR_ARENA* arena;   
   YR_RULE* rules_list_head;   /* rule 数组, 以gflag &= 0x1000 结束*/
   YR_EXTERNAL_VARIABLE* externals_list_head;
   YR_AC_TRANSITION_TABLE ac_transition_table;  /* aho-corasick 状态转换表, 这是一个经典的状态转换表 */
