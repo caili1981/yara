@@ -267,21 +267,22 @@ static int _yr_ac_state_destroy(
    root@kernel:/home/jackcai/yara# yara my_first_rule my_first_rule
    -------------------------------------------------------
    0x1c61840 childs:2 depth:0 input:|{0x0} failure:0x1c61840
-   0x1c6b3b0 childs:2 depth:1 input:o|{0x6f} failure:0x1c61840
-   0x1c6b680 childs:1 depth:2 input:o|{0x6f} failure:0x1c6b3b0
-   0x1c6b6b0 childs:1 depth:3 input:k|{0x6b} failure:0x1c6b3e0
-   0x1c6b6e0 childs:0 depth:4 input: |{0x20} failure:0x1c61840
+    0x1c6b3b0 childs:2 depth:1 input:o|{0x6f} failure:0x1c61840
+     0x1c6b680 childs:1 depth:2 input:o|{0x6f} failure:0x1c6b3b0
+      0x1c6b6b0 childs:1 depth:3 input:k|{0x6b} failure:0x1c6b3e0
+       0x1c6b6e0 childs:0 depth:4 input: |{0x20} failure:0x1c61840
    $s3 = /ook yar/
-   0x1c6b3e0 childs:1 depth:2 input:k|{0x6b} failure:0x1c61840
-   0x1c6b410 childs:1 depth:3 input:a|{0x61} failure:0x1c61840
-   0x1c6b440 childs:0 depth:4 input:y|{0x79} failure:0x1c61840
+     0x1c6b3e0 childs:1 depth:2 input:k|{0x6b} failure:0x1c61840
+      0x1c6b410 childs:1 depth:3 input:a|{0x61} failure:0x1c61840
+       0x1c6b440 childs:0 depth:4 input:y|{0x79} failure:0x1c61840
    $s2 = /okay/
-   0x1c6b160 childs:1 depth:1 input:l|{0x6c} failure:0x1c61840
-   0x1c6b190 childs:1 depth:2 input:o|{0x6f} failure:0x1c6b3b0
-   0x1c6b1c0 childs:1 depth:3 input:o|{0x6f} failure:0x1c6b3b0  
+    0x1c6b160 childs:1 depth:1 input:l|{0x6c} failure:0x1c61840
+     0x1c6b190 childs:1 depth:2 input:o|{0x6f} failure:0x1c6b3b0
+      0x1c6b1c0 childs:1 depth:3 input:o|{0x6f} failure:0x1c6b3b0  
    ===> 之所以跳转到'o', 而不是'oo', 因为跳转到'oo' 仍是比较'ook', 
-   还需继续往上回溯, 这是一个提高效率的优化
-   0x1c6b1f0 childs:0 depth:4 input:k|{0x6b} failure:0x1c6b6b0
+   还需继续往上回溯, 这是一个提高效率的优化, 在函数:
+   _yr_ac_optimize_failure_links里实现
+       0x1c6b1f0 childs:0 depth:4 input:k|{0x6b} failure:0x1c6b6b0
    P = //
  */
 static int _yr_ac_create_failure_links(
@@ -318,7 +319,7 @@ static int _yr_ac_create_failure_links(
   // Traverse the trie in BFS order calculating the failure link
   // for each state.
 
-  while (!_yr_ac_queue_is_empty(&queue))   /*level 1*/
+  while (!_yr_ac_queue_is_empty(&queue))   
   {
     current_state = _yr_ac_queue_pop(&queue);
 
@@ -339,12 +340,12 @@ static int _yr_ac_create_failure_links(
 
     transition_state = current_state->first_child;
 
-    while (transition_state != NULL)      /*level 2*/
+    while (transition_state != NULL)      
     {
       FAIL_ON_ERROR(_yr_ac_queue_push(&queue, transition_state));
       failure_state = current_state->failure;
 
-      while (1)                           /*level 3*/
+      while (1)                           
       {
         temp_state = _yr_ac_next_state(
             failure_state, transition_state->input);
@@ -942,7 +943,11 @@ int yr_ac_compile(
   uint32_t i;
 
   FAIL_ON_ERROR(_yr_ac_create_failure_links(automaton));
+  printf("atoms after create failure links:\n");
+  yr_ac_print_automaton(automaton);
   FAIL_ON_ERROR(_yr_ac_optimize_failure_links(automaton));
+  printf("atoms after optimize:\n");
+  yr_ac_print_automaton(automaton);
   FAIL_ON_ERROR(_yr_ac_build_transition_table(automaton));
 
   FAIL_ON_ERROR(yr_arena_reserve_memory(

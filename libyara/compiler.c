@@ -830,7 +830,6 @@ YR_API int yr_compiler_get_rules(
   if (compiler->compiled_rules_arena == NULL)
      FAIL_ON_ERROR(_yr_compiler_compile_rules(compiler));
 
-  yr_ac_print_automaton(compiler->automaton);
 
   yara_rules = (YR_RULES*) yr_malloc(sizeof(YR_RULES));
 
