@@ -401,7 +401,46 @@ struct RE_NODE
   RE_NODE* prev_sibling;
   RE_NODE* next_sibling;
 
-  uint8_t* forward_code;   /* re执行码, 指向re_code_arena的一块区域 */
+  /* 
+   * 正则表达式的执行码可以拆分为向前和向后执行两部分, 先执行正向的，再执行反向的
+   * 正向反向结合起来就是整个的匹配过程, 但是正向反向的具体拆分是根据正则表达式而来的 
+   * 例如: 
+   * 1. a[AP]M) 拆分成
+   * 正向: M)
+   * 反向: a[AP]
+   * 2. abc[AP]M) 拆分成
+   * 正向: abc[AP]M)
+   * 反向: NULL
+   * 正向一定会有，而反向则根据情况而定，不一定会有
+   */
+  /*
+   *  例如: a[AP]M)
+   *  根据M)构造aho corasick 树
+   *  正向:
+   *  RE_OPCODE_LITERAL: M
+   *  RE_OPCODE_LITERAL: )
+   *  RE_OPCODE_MATCH
+   *  反向:
+   *  RE_OPCODE_CLASS: [AP]
+   *  RE_OPCODE_LITERAL: a
+   *  RE_OPCODE_MATCH
+   *  log如下:
+exec forward code:
+opcode = 162, a2
+literal_match: M
+opcode = 162, a2
+literal_match: )
+opcode = 173, ad
+exec backward code:
+opcode = 165, a5
+opcode = 162, a2
+literal_match: b
+opcode = 162, a2
+literal_match: a
+opcode = 173, ad
+   */
+
+  uint8_t* forward_code;
   uint8_t* backward_code;  
 };
 
@@ -443,7 +482,7 @@ struct RE_ERROR
   char message[384];
 };
 
-
+/* 正则表达式的执行单元 */
 struct RE_FIBER
 {
   const uint8_t* ip;    // instruction pointer
@@ -494,6 +533,7 @@ struct YR_MATCH
 };
 
 
+/* aho corasick 树的数据结构 */
 struct YR_AC_STATE
 {
   uint8_t depth;

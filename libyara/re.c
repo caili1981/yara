@@ -1921,6 +1921,7 @@ int yr_re_exec(
     {
       ip = fiber->ip;
       action = ACTION_NONE;
+      printf("opcode = %d, 0x%x\n", *ip, *ip);
 
       switch (*ip)
       {
@@ -1951,6 +1952,7 @@ int yr_re_exec(
           else
             match = (*input == *(ip + 1));
           action = match ? ACTION_NONE : ACTION_KILL;
+          printf("literal_match: %c\n", *(ip + 1));
           fiber->ip += 2;
           break;
 

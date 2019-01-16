@@ -573,6 +573,7 @@ YR_API int yr_compiler_add_file(
   if (file_name != NULL)
     _yr_compiler_pop_file_name(compiler);
 
+
   return result;
 }
 
@@ -829,6 +830,8 @@ YR_API int yr_compiler_get_rules(
   if (compiler->compiled_rules_arena == NULL)
      FAIL_ON_ERROR(_yr_compiler_compile_rules(compiler));
 
+  yr_ac_print_automaton(compiler->automaton);
+
   yara_rules = (YR_RULES*) yr_malloc(sizeof(YR_RULES));
 
   if (yara_rules == NULL)
@@ -858,6 +861,7 @@ YR_API int yr_compiler_get_rules(
       yr_free(yara_rules));
 
   *rules = yara_rules;
+
 
   return ERROR_SUCCESS;
 }

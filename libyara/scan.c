@@ -27,6 +27,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -656,6 +657,7 @@ static int _yr_scan_verify_re_match(
 
   if (STRING_IS_ASCII(ac_match->string))
   {
+    printf("exec forward code:\n");
     FAIL_ON_ERROR(exec(
         context,
         ac_match->forward_code,
@@ -699,6 +701,7 @@ static int _yr_scan_verify_re_match(
 
   if (ac_match->backward_code != NULL)
   {
+    printf("exec backward code:\n");
     FAIL_ON_ERROR(exec(
         context,
         ac_match->backward_code,

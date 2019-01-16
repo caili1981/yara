@@ -41,11 +41,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RE_NODE_MASKED_LITERAL      2
 #define RE_NODE_ANY                 3
 #define RE_NODE_CONCAT              4
-#define RE_NODE_ALT                 5
+#define RE_NODE_ALT                 5    /* [abcd | efgh] */
 #define RE_NODE_RANGE               6
 #define RE_NODE_STAR                7
 #define RE_NODE_PLUS                8
-#define RE_NODE_CLASS               9
+#define RE_NODE_CLASS               9    /* [\S] */
 #define RE_NODE_WORD_CHAR           10
 #define RE_NODE_NON_WORD_CHAR       11
 #define RE_NODE_SPACE               12
@@ -94,7 +94,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RE_FLAGS_WIDE                   0x10
 #define RE_FLAGS_NO_CASE                0x20
 #define RE_FLAGS_SCAN                   0x40
-#define RE_FLAGS_DOT_ALL                0x80
+#define RE_FLAGS_DOT_ALL                0x80 
 #define RE_FLAGS_GREEDY                0x400
 #define RE_FLAGS_UNGREEDY              0x800
 

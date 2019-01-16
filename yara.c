@@ -55,7 +55,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 #include "threading.h"
 
-
 #define ERROR_COULD_NOT_CREATE_THREAD  100
 
 #ifndef MAX_PATH
