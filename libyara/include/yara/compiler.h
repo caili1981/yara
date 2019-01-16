@@ -97,7 +97,7 @@ typedef struct _YR_COMPILER
   YR_ARENA*         externals_arena;
   YR_ARENA*         namespaces_arena;
   YR_ARENA*         metas_arena;
-  YR_ARENA*         matches_arena;
+  YR_ARENA*         matches_arena;  /* 存储YR_AC_MATCH */
   YR_ARENA*         automaton_arena;
 
   YR_AC_AUTOMATON*  automaton;

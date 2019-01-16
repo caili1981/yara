@@ -36,8 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <yara/error.h>
 #include <yara/utils.h>
 #include <yara/mem.h>
-
-
+/*TODO: 关于串行化/arena的东西暂时并没有读 */
 
 typedef struct _QUEUE_NODE
 {
@@ -401,6 +400,9 @@ static int _yr_ac_create_failure_links(
 // accepted in s1 too.
 //
 
+/*
+ * 检查s1的子节点的合集和s2子节点的合集
+ */
 static bool _yr_ac_transitions_subset(
     YR_AC_STATE* s1,
     YR_AC_STATE* s2)
@@ -436,6 +438,10 @@ static bool _yr_ac_transitions_subset(
 //
 // Removes unnecessary failure links.
 //
+
+/*
+ * 优化ac状态机. 详见函数_yr_ac_create_failure_links
+ */
 
 static int _yr_ac_optimize_failure_links(
     YR_AC_AUTOMATON* automaton)
@@ -865,6 +871,8 @@ int yr_ac_automaton_destroy(
 // Adds a string to the automaton. This function is invoked once for each
 // string defined in the rules.
 //
+
+/* 将一个string所对应的atmos加入到ac状态机中 */
 
 int yr_ac_add_string(
     YR_AC_AUTOMATON* automaton,
