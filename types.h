@@ -283,8 +283,8 @@ struct YR_RULE
 
   DECLARE_REFERENCE(const char*, identifier);
   DECLARE_REFERENCE(const char*, tags);
-  DECLARE_REFERENCE(YR_META*, metas);
-  DECLARE_REFERENCE(YR_STRING*, strings);
+  DECLARE_REFERENCE(YR_META*, metas);      /* meta 数组 */
+  DECLARE_REFERENCE(YR_STRING*, strings);  /* 指针数组 */
   DECLARE_REFERENCE(YR_NAMESPACE*, ns);
 
   // Number of atoms generated for this rule.

@@ -263,7 +263,13 @@ struct YR_STRING
 
   DECLARE_REFERENCE(char*, identifier);  /* match string的变量名 */
   DECLARE_REFERENCE(uint8_t*, string);   /* match pattern */
-  DECLARE_REFERENCE(YR_STRING*, chained_to);  /* 正则表达式相关 */
+  /* 
+   * chained to 一般用于 abcd.{0, 100}efgh 这种带有重复次数的正则表达式 
+   * abcd efgh 会分别查询，中间的正则表达式直接忽略. 是否重复了这么多次，
+   * 通过matches的偏移量判断, chain_gap_min/chain_gap_max则用来记录这个
+   * 正则表达式的offset, 即此例中的0, 100
+   */
+  DECLARE_REFERENCE(YR_STRING*, chained_to);  
   DECLARE_REFERENCE(YR_RULE*, rule);     /* match rule */
 
   int32_t chain_gap_min;
@@ -283,7 +289,13 @@ struct YR_RULE
 
   DECLARE_REFERENCE(const char*, identifier);
   DECLARE_REFERENCE(const char*, tags);
-  DECLARE_REFERENCE(YR_META*, metas);   /* meta data of the rule */
+  /*metas 数组 */
+  /*META_IS_NULL 通过 metas->type == META_TYPE_NULL判断是否是最后一个meta */
+  DECLARE_REFERENCE(YR_META*, metas);   /* meta data of the rule */ 
+  /* 
+   * rule->strings[last_string].g_flags = STRING_GFLAGS_NULL,
+   * 通过此规则来判断string是否是此rule的最后一个string
+   */
   DECLARE_REFERENCE(YR_STRING*, strings); /* string的数组 */
   DECLARE_REFERENCE(YR_NAMESPACE*, ns);
 
@@ -585,7 +597,7 @@ struct YR_RULES
    *    2. re_code_arena  ====> 正则表达式 
    *    3. rules_arena   ====> 存放rule (YR_RULE)
    *    4. strings_arena  ====> 匹配字符串(YR_STRING)
-   *    5. external_arena
+   *    5. externals_arena
    *    6. namespace_arena
    *    7. metas_arena
    *    8. sz_arena
@@ -595,6 +607,20 @@ struct YR_RULES
    */
   YR_ARENA* arena;   
   YR_RULE* rules_list_head;   /* rule 数组, 以gflag &= 0x1000 结束*/
+
+  /*
+   * 指针数组, 通过EXTERNAL_VARIABLE_IS_NULL判断是否结束
+   * 外部变量是可以在运行时改变的变量，可以应用在rule上.
+   * 例如: http_context 可以在http时被设置为'get', 'post', 
+   * 对于不同的context，设置不同的filesize
+   * external variable 相关的三个函数
+   * 1. yr_compiler_define_string_variable
+   *    > 将变量加入compiler的object hash table里。 这是一个初始化函数, 必须在编译rule之前调用
+   * 2. yr_rules_define_string_variable
+   *    > 可以运行时调用，但是它的值为所有thread共享
+   * 3. yr_scanner_define_string_variable *    
+   *    > 当前thread独有 
+   */
   YR_EXTERNAL_VARIABLE* externals_list_head;
   YR_AC_TRANSITION_TABLE ac_transition_table;  /* aho-corasick 状态转换表, 这是一个经典的状态转换表 */
   /* 
@@ -682,7 +708,11 @@ typedef int (*YR_CALLBACK_FUNC)(
     void* message_data,
     void* user_data);
 
-
+/*
+ * scan context是扫描时需要用到的临时数据, 每个thread一个
+ * 但是不仅仅是这个临时数据, 还有rule和string下的matches, 这些都是需要保存的
+ * 具体参见_yr_scanner_clean_matches函数中所用到的变量
+ */
 struct YR_SCAN_CONTEXT
 {
   // File size of the file being scanned.
@@ -692,6 +722,7 @@ struct YR_SCAN_CONTEXT
   uint64_t entry_point;
 
   // Scanning flags.
+  /* SCAN_FLAGS_FAST_MODE/SCAN_FLAGS_PROCESS_MEMORY/SCAN_FLAGS_NO_TRYCACHE */
   int flags;
 
   // Thread index for the thread using this scan context. The number of threads
@@ -728,13 +759,20 @@ struct YR_SCAN_CONTEXT
 
   // Arena used for storing pointers to the YR_STRING struct for each matching
   // string. The pointers are used by _yr_scanner_clean_matches.
-  /* 只存放存放指针 */
+
+  /* 
+   * 只存放存放指针, 通过此指针可以找到, 每个string的match context 
+   * 即便target出现很多次，也只有一个string写入matching_strings_arena
+   * 但是string->matches会有多个context
+   * string->matches只是存储指针，真正的数据存储在scanner->matches_arena中
+   */
   YR_ARENA* matching_strings_arena;
 
   // Stopwatch used for measuring the time elapsed during the scan.
   YR_STOPWATCH stopwatch;
 
   // Fiber pool used by yr_re_exec.
+  /* 字节码的栈, 用于yr_re_exec */
   RE_FIBER_POOL re_fiber_pool;
 };
 
