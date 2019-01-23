@@ -247,12 +247,15 @@ int yr_execute_code(
   start_time = yr_stopwatch_elapsed_us(&context->stopwatch);
   #endif
 
+  printf("rule exec code:\n");
+
   while(!stop)
   {
     opcode = *ip;
     ip++;
     loop_times ++;
 
+    printf("opcode = %0d\n", opcode);
     switch(opcode)
     {
       case OP_NOP:
@@ -1294,9 +1297,6 @@ int yr_execute_code(
   yr_modules_unload_all(context);
   yr_free(stack);
 
-#if 0
   printf("loop_times = %lu\n", loop_times);
-#endif
-
   return result;
 }

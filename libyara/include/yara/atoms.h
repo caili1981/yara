@@ -52,7 +52,7 @@ typedef struct YR_ATOMS_CONFIG YR_ATOMS_CONFIG;
  */
 struct YR_ATOM
 {
-  uint8_t length;
+  uint8_t length;  /* atom 状态机最长长度为4，但是可以小于4 */
   uint8_t bytes[YR_MAX_ATOM_LENGTH];
   uint8_t mask[YR_MAX_ATOM_LENGTH];
 };
