@@ -331,7 +331,14 @@ struct YR_EXTERNAL_VARIABLE
 
 struct YR_AC_MATCH
 {
-  uint16_t backtrack;
+  /*
+   * 每一个match 的 backtrack 长度都不一定一致, 并不一定和depth一致 
+   * 例如: rule为look, ook.
+   * rule look 节点所对应的match，可能有两个
+   * backtrack = 4, look.
+   * backtrack = 3, ook.
+   */
+  uint16_t backtrack;   
 
   DECLARE_REFERENCE(YR_STRING*, string);
   /* forward_code/backward_code 设置了执行码 */

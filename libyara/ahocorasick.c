@@ -359,6 +359,7 @@ static int _yr_ac_create_failure_links(
           }
           else
           {
+            /* 将子节点的match加入到当前节点 */
             match = transition_state->matches;
 
             while (match != NULL && match->next != NULL)
@@ -753,10 +754,12 @@ static void _yr_ac_print_automaton_state(
 
   while (match != NULL)
   {
-    printf("\n");
 
+    printf("\n");
     for (i = 0; i < state->depth + 1; i++)
       printf(" ");
+
+    printf(" backtrack:%d ", match->backtrack);
 
     printf("%s = ", match->string->identifier);
 
@@ -950,11 +953,13 @@ int yr_ac_compile(
 {
   uint32_t i;
 
+  printf("atoms before create failure links:\n");
+  yr_ac_print_automaton(automaton);
   FAIL_ON_ERROR(_yr_ac_create_failure_links(automaton));
   printf("atoms after create failure links:\n");
   yr_ac_print_automaton(automaton);
   FAIL_ON_ERROR(_yr_ac_optimize_failure_links(automaton));
-  printf("atoms after optimize:\n");
+  printf("atoms after optimize failure links:\n");
   yr_ac_print_automaton(automaton);
   FAIL_ON_ERROR(_yr_ac_build_transition_table(automaton));
 

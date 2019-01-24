@@ -1467,7 +1467,8 @@ int yr_atoms_extract_from_re(
 // Extract atoms from a string.
 //
 
-/* atoms是什么意思??? */
+/* 处理普通的字符串 */
+
 int yr_atoms_extract_from_string(
     YR_ATOMS_CONFIG* config,
     uint8_t* string,
@@ -1551,7 +1552,7 @@ int yr_atoms_extract_from_string(
   }
 
   if (flags & STRING_GFLAGS_NO_CASE)
-  {
+  { /* 大小写不关心的字符串会直接full mesh扩展 */
     FAIL_ON_ERROR_WITH_CLEANUP(
         _yr_atoms_case_insensitive(*atoms, &case_insensitive_atoms),
         {
