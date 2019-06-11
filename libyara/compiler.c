@@ -50,6 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <yara/object.h>
 #include <yara/lexer.h>
 #include <yara/strutils.h>
+#include <grammar.h>
 
 
 static void _yr_compiler_default_include_free(
@@ -1230,4 +1231,47 @@ YR_API char* yr_compiler_get_error_message(
   }
 
   return buffer;
+}
+
+YR_API void print_compiler_stats(YR_COMPILER *compiler)
+{
+    printf("the compiler statistics is as below:\n");
+    printf("total rules: %d\n", compiler->stats.keyword[_RULE_]);
+    printf("total private rules: %d\n", compiler->stats.keyword[_PRIVATE_]);
+    printf("total global rules: %d\n", compiler->stats.keyword[_GLOBAL_]);
+    printf("total metas: %d\n", compiler->stats.keyword[_META_]);
+    printf("total strings id: %d\n", compiler->stats.keyword[_STRING_IDENTIFIER_]);
+    printf("total string count used: %d\n", compiler->stats.keyword[_STRING_COUNT_]);
+    printf("total string offset used: %d\n", compiler->stats.keyword[_STRING_OFFSET_]);
+    printf("total string length used: %d\n", compiler->stats.keyword[_STRING_LENGTH_]);
+    printf("total string id with wildcard used: %d\n", compiler->stats.keyword[_STRING_IDENTIFIER_WITH_WILDCARD_]);
+    printf("total text string used (including meta): %d\n", compiler->stats.keyword[_TEXT_STRING_]);
+    printf("total hex string used: %d\n", compiler->stats.keyword[_HEX_STRING_]);
+    printf("total regular expression: %d\n", compiler->stats.keyword[_REGEXP_]);
+    printf("total ascii keyword: %d\n", compiler->stats.keyword[_ASCII_]);
+    printf("total wide keyword: %d\n", compiler->stats.keyword[_WIDE_]);
+    printf("total xor keyword: %d\n", compiler->stats.keyword[_XOR_]);
+    printf("total nocase keyword: %d\n", compiler->stats.keyword[_NOCASE_]);
+    printf("total fullword keyword: %d\n", compiler->stats.keyword[_FULLWORD_]);
+    printf("total at keyword: %d\n", compiler->stats.keyword[_AT_]);
+    printf("total filesize keyword: %d\n", compiler->stats.keyword[_FILESIZE_]);
+    printf("total entrypoint keyword: %d\n", compiler->stats.keyword[_ENTRYPOINT_]);
+    printf("total all keyword: %d\n", compiler->stats.keyword[_ALL_]);
+    printf("total any keyword: %d\n", compiler->stats.keyword[_ANY_]);
+    printf("total in keyword: %d\n", compiler->stats.keyword[_IN_]);
+    printf("total of keyword: %d\n", compiler->stats.keyword[_OF_]);
+    printf("total for keyword: %d\n", compiler->stats.keyword[_FOR_]);
+    printf("total them keyword: %d\n", compiler->stats.keyword[_THEM_]);
+    printf("total matches keyword: %d\n", compiler->stats.keyword[_MATCHES_]);
+    printf("total contain keyword: %d\n", compiler->stats.keyword[_CONTAINS_]);
+    printf("total import keyword: %d\n", compiler->stats.keyword[_IMPORT_]);
+    printf("total << keyword: %d\n", compiler->stats.keyword[_SHIFT_LEFT_]);
+    printf("total >> keyword: %d\n", compiler->stats.keyword[_SHIFT_RIGHT_]);
+    printf("total integer function used: %d\n", compiler->stats.keyword[_INTEGER_FUNCTION_]);
+    printf("total condition: %d\n", compiler->stats.keyword[_CONDITION_]);
+    printf("external variables: %d\n", compiler->stats.keyword[_YR_COMPILER_KEYWORD_EXTERNAL]);
+    printf("array: %d\n", compiler->stats.keyword[_YR_COMPILER_KEYWORD_ARRAY]);
+    printf("dictory: %d\n", compiler->stats.keyword[_YR_COMPILER_KEYWORD_DICTORY]);
+    printf("function: %d\n", compiler->stats.keyword[_YR_COMPILER_KEYWORD_FUNCTION]);
+    printf("structure: %d\n", compiler->stats.keyword[_YR_COMPILER_KEYWORD_STRUCTURE]);
 }

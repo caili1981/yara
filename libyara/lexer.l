@@ -162,43 +162,43 @@ octdigit      [0-7]
 
 %%
 
-".."                    { return _DOT_DOT_;     }
-"<"                     { return _LT_;          }
-">"                     { return _GT_;          }
-"<="                    { return _LE_;          }
-">="                    { return _GE_;          }
-"=="                    { return _EQ_;          }
-"!="                    { return _NEQ_;         }
-"<<"                    { return _SHIFT_LEFT_;  }
-">>"                    { return _SHIFT_RIGHT_; }
-"private"               { return _PRIVATE_;     }
-"global"                { return _GLOBAL_;      }
-"rule"                  { return _RULE_;        }
-"meta"                  { return _META_;        }
-"strings"               { return _STRINGS_;     }
-"ascii"                 { return _ASCII_;       }
-"wide"                  { return _WIDE_;        }
-"xor"                   { return _XOR_;         }
-"fullword"              { return _FULLWORD_;    }
-"nocase"                { return _NOCASE_;      }
-"condition"             { return _CONDITION_;   }
-"true"                  { return _TRUE_;        }
-"false"                 { return _FALSE_;       }
-"not"                   { return _NOT_;         }
-"and"                   { return _AND_;         }
-"or"                    { return _OR_;          }
-"at"                    { return _AT_;          }
-"in"                    { return _IN_;          }
-"of"                    { return _OF_;          }
-"them"                  { return _THEM_;        }
-"for"                   { return _FOR_;         }
-"all"                   { return _ALL_;         }
-"any"                   { return _ANY_;         }
-"entrypoint"            { return _ENTRYPOINT_;  }
-"filesize"              { return _FILESIZE_;    }
-"matches"               { return _MATCHES_;     }
-"contains"              { return _CONTAINS_;    }
-"import"                { return _IMPORT_;      }
+".."                    { compiler->stats.keyword[ _DOT_DOT_]++; return _DOT_DOT_;     }
+"<"                     { compiler->stats.keyword[ _LT_]++; return _LT_;          }
+">"                     { compiler->stats.keyword[ _GT_]++; return _GT_;          }
+"<="                    { compiler->stats.keyword[ _LE_]++; return _LE_;          }
+">="                    { compiler->stats.keyword[ _GE_]++; return _GE_;          }
+"=="                    { compiler->stats.keyword[ _EQ_]++; return _EQ_;          }
+"!="                    { compiler->stats.keyword[ _NEQ_]++; return _NEQ_;         }
+"<<"                    { compiler->stats.keyword[ _SHIFT_LEFT_]++; return _SHIFT_LEFT_;  }
+">>"                    { compiler->stats.keyword[ _SHIFT_RIGHT_]++; return _SHIFT_RIGHT_; }
+"private"               { compiler->stats.keyword[ _PRIVATE_]++; return _PRIVATE_;     }
+"global"                { compiler->stats.keyword[ _GLOBAL_]++; return _GLOBAL_;      }
+"rule"                  { compiler->stats.keyword[ _RULE_]++; return _RULE_;        }
+"meta"                  { compiler->stats.keyword[ _META_]++; return _META_;        }
+"strings"               { compiler->stats.keyword[ _STRINGS_]++; return _STRINGS_;     }
+"ascii"                 { compiler->stats.keyword[ _ASCII_]++; return _ASCII_;       }
+"wide"                  { compiler->stats.keyword[ _WIDE_]++; return _WIDE_;        }
+"xor"                   { compiler->stats.keyword[ _XOR_]++; return _XOR_;         }
+"fullword"              { compiler->stats.keyword[ _FULLWORD_]++; return _FULLWORD_;    }
+"nocase"                { compiler->stats.keyword[ _NOCASE_]++; return _NOCASE_;      }
+"condition"             { compiler->stats.keyword[ _CONDITION_]++; return _CONDITION_;   }
+"true"                  { compiler->stats.keyword[ _TRUE_]++; return _TRUE_;        }
+"false"                 { compiler->stats.keyword[ _FALSE_]++; return _FALSE_;       }
+"not"                   { compiler->stats.keyword[ _NOT_]++; return _NOT_;         }
+"and"                   { compiler->stats.keyword[ _AND_]++; return _AND_;         }
+"or"                    { compiler->stats.keyword[ _OR_]++; return _OR_;          }
+"at"                    { compiler->stats.keyword[ _AT_]++; return _AT_;          }
+"in"                    { compiler->stats.keyword[ _IN_]++; return _IN_;          }
+"of"                    { compiler->stats.keyword[ _OF_]++; return _OF_;          }
+"them"                  { compiler->stats.keyword[ _THEM_]++; return _THEM_;        }
+"for"                   { compiler->stats.keyword[ _FOR_]++; return _FOR_;         }
+"all"                   { compiler->stats.keyword[ _ALL_]++; return _ALL_;         }
+"any"                   { compiler->stats.keyword[ _ANY_]++; return _ANY_;         }
+"entrypoint"            { compiler->stats.keyword[ _ENTRYPOINT_]++; return _ENTRYPOINT_;  }
+"filesize"              { compiler->stats.keyword[ _FILESIZE_]++; return _FILESIZE_;    }
+"matches"               { compiler->stats.keyword[ _MATCHES_]++; return _MATCHES_;     }
+"contains"              { compiler->stats.keyword[ _CONTAINS_]++; return _CONTAINS_;    }
+"import"                { compiler->stats.keyword[ _IMPORT_]++; return _IMPORT_;      }
 
 
 "/*"                    { BEGIN(comment);       }
@@ -364,6 +364,7 @@ $({letter}|{digit}|_)*"*"  {
   if (yylval->c_string == NULL)
     error(ERROR_INSUFFICIENT_MEMORY);
 
+  compiler->stats.keyword[_STRING_IDENTIFIER_WITH_WILDCARD_]++;
   return _STRING_IDENTIFIER_WITH_WILDCARD_;
 }
 
@@ -375,6 +376,7 @@ $({letter}|{digit}|_)*  {
   if (yylval->c_string == NULL)
     error(ERROR_INSUFFICIENT_MEMORY);
 
+  compiler->stats.keyword[_STRING_IDENTIFIER_]++;
   return _STRING_IDENTIFIER_;
 }
 
@@ -392,6 +394,7 @@ $({letter}|{digit}|_)*  {
     yylval->c_string[0] = '$'; /* replace # by $*/
   }
 
+  compiler->stats.keyword[_STRING_COUNT_]++;
   return _STRING_COUNT_;
 }
 
@@ -409,6 +412,7 @@ $({letter}|{digit}|_)*  {
     yylval->c_string[0] = '$'; /* replace @ by $*/
   }
 
+  compiler->stats.keyword[_STRING_OFFSET_]++;
   return _STRING_OFFSET_;
 }
 
@@ -425,7 +429,7 @@ $({letter}|{digit}|_)*  {
   {
     yylval->c_string[0] = '$'; /* replace ! by $*/
   }
-
+  compiler->stats.keyword[_STRING_LENGTH_]++;
   return _STRING_LENGTH_;
 }
 
@@ -465,6 +469,7 @@ u?int(8|16|32)(be)? {
     yylval->integer += 6;
   }
 
+  compiler->stats.keyword[_INTEGER_FUNCTION_]++;
   return _INTEGER_FUNCTION_;
 }
 
@@ -479,6 +484,7 @@ u?int(8|16|32)(be)? {
   if (yylval->c_string == NULL)
     error(ERROR_INSUFFICIENT_MEMORY);
 
+  compiler->stats.keyword[_IDENTIFIER_]++;
   return _IDENTIFIER_;
 }
 
@@ -520,11 +526,13 @@ u?int(8|16|32)(be)? {
     }
   }
 
+  compiler->stats.keyword[_NUMBER_]++;
   return _NUMBER_;
 }
 
 {digit}+"."{digit}+  {
   yylval->double_ = atof(yytext);
+  compiler->stats.keyword[_DOUBLE_]++;
   return _DOUBLE_;
 }
 
@@ -541,6 +549,7 @@ u?int(8|16|32)(be)? {
     error(ERROR_INTEGER_OVERFLOW);
   }
 
+  compiler->stats.keyword[_NUMBER_]++;
   return _NUMBER_;
 }
 
@@ -557,6 +566,7 @@ u?int(8|16|32)(be)? {
     error(ERROR_INTEGER_OVERFLOW);
   }
 
+  compiler->stats.keyword[_NUMBER_]++;
   return _NUMBER_;
 }
 
@@ -571,6 +581,7 @@ u?int(8|16|32)(be)? {
 
   BEGIN(INITIAL);
 
+  compiler->stats.keyword[_TEXT_STRING_]++;
   return _TEXT_STRING_;
 }
 
@@ -646,6 +657,7 @@ u?int(8|16|32)(be)? {
     *yyextra->lex_buf_ptr = '\0';
     strlcpy(s->c_string, yyextra->lex_buf, s->length + 1);
     yylval->sized_string = s;
+    printf("regular expression: %s\n", s->c_string);
   }
   else
   {
@@ -653,6 +665,7 @@ u?int(8|16|32)(be)? {
   }
 
   BEGIN(INITIAL);
+  compiler->stats.keyword[_REGEXP_]++;
   return _REGEXP_;
 }
 
@@ -713,6 +726,7 @@ u?int(8|16|32)(be)? {
   strlcpy(s->c_string, yytext, s->length + 1);
   yylval->sized_string = s;
 
+  compiler->stats.keyword[_HEX_STRING_]++;
   return _HEX_STRING_;
 }
 

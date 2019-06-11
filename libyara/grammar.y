@@ -616,11 +616,19 @@ identifier
           $$.type = EXPRESSION_TYPE_INTEGER;
           $$.value.integer = UNDEFINED;
           $$.identifier = compiler->loop_identifier[var_index];
+          printf("object loop identifier: %s\n", compiler->loop_identifier[var_index]);
+          compiler->stats.keyword[_YR_COMPILER_KEYWORD_LOOP_IDENTIFIER]++;
         }
         else
         {
           // Search for identifier within the global namespace, where the
           // externals variables reside.
+          /*
+           * 查找优先级:
+           * 1. 先找global namespace 的变量
+           * 2. 再找current namespace 的变量
+           * 3. 再找current namespace 的rule. 
+           */
 
           YR_OBJECT* object = (YR_OBJECT*) yr_hash_table_lookup(
               compiler->objects_table, $1, NULL);
@@ -652,6 +660,8 @@ identifier
             $$.type = EXPRESSION_TYPE_OBJECT;
             $$.value.object = object;
             $$.identifier = object->identifier;
+            printf("object external variable: %s\n", object->identifier);
+            compiler->stats.keyword[_YR_COMPILER_KEYWORD_EXTERNAL]++;
           }
           else
           {
@@ -672,6 +682,8 @@ identifier
               $$.type = EXPRESSION_TYPE_BOOLEAN;
               $$.value.integer = UNDEFINED;
               $$.identifier = rule->identifier;
+              printf("object reference rule: %s\n", rule->identifier);
+              compiler->stats.keyword[_YR_COMPILER_KEYWORD_EXTERNAL]++;
             }
             else
             {
@@ -713,6 +725,8 @@ identifier
             $$.type = EXPRESSION_TYPE_OBJECT;
             $$.value.object = field;
             $$.identifier = field->identifier;
+            printf("object structure: %s\n", field->identifier);
+            compiler->stats.keyword[_YR_COMPILER_KEYWORD_STRUCTURE]++;
           }
           else
           {
@@ -758,6 +772,8 @@ identifier
           $$.type = EXPRESSION_TYPE_OBJECT;
           $$.value.object = array->prototype_item;
           $$.identifier = array->identifier;
+          compiler->stats.keyword[_YR_COMPILER_KEYWORD_ARRAY]++;
+          printf("object array: %s\n", array->identifier);
         }
         else if ($1.type == EXPRESSION_TYPE_OBJECT &&
                  $1.value.object->type == OBJECT_TYPE_DICTIONARY)
@@ -779,6 +795,8 @@ identifier
           $$.type = EXPRESSION_TYPE_OBJECT;
           $$.value.object = dict->prototype_item;
           $$.identifier = dict->identifier;
+          compiler->stats.keyword[_YR_COMPILER_KEYWORD_DICTORY]++;
+          printf("object dictory: %s\n", dict->identifier);
         }
         else
         {
@@ -820,6 +838,8 @@ identifier
           $$.type = EXPRESSION_TYPE_OBJECT;
           $$.value.object = function->return_obj;
           $$.identifier = function->identifier;
+          compiler->stats.keyword[_YR_COMPILER_KEYWORD_FUNCTION]++;
+          printf("object function: %s\n", function->identifier);
         }
         else
         {

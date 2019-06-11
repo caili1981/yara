@@ -113,6 +113,7 @@ int yr_atoms_heuristic_quality(
     YR_ATOMS_CONFIG* config,
     YR_ATOM* atom)
 {
+  /* ATOM 的字符掩码 */
   YR_BITMASK seen_bytes[YR_BITMASK_SIZE(256)];
 
   int quality = 0;
@@ -143,7 +144,7 @@ int yr_atoms_heuristic_quality(
         switch (atom->bytes[i])
         {
           case 0x00:
-          case 0x20:
+          case 0x20: /* 空格 */
           case 0xCC:
           case 0xFF:
             // Common bytes contribute less to the quality than the rest.
@@ -553,6 +554,7 @@ int _yr_atoms_trim(
 // to the Aho-Corasick automaton.
 //
 
+/* 递归函数 */
 static int _yr_atoms_choose(
     YR_ATOMS_CONFIG* config,
     YR_ATOM_TREE_NODE* node,

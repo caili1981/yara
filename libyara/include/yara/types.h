@@ -341,7 +341,7 @@ struct YR_AC_MATCH
   uint16_t backtrack;   
 
   DECLARE_REFERENCE(YR_STRING*, string);
-  /* forward_code/backward_code 设置了执行码 */
+  /* forward_code/backward_code 设置了执行码, for RE */
   DECLARE_REFERENCE(const uint8_t*, forward_code);
   DECLARE_REFERENCE(const uint8_t*, backward_code);
   DECLARE_REFERENCE(YR_AC_MATCH*, next);  /* 链表，当状态机找到yr_ac_match时，会一次遍历链表，以找到所有的match */

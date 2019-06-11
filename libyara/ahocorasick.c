@@ -875,7 +875,10 @@ int yr_ac_automaton_destroy(
 // string defined in the rules.
 //
 
-/* 将一个string所对应的atmos加入到ac状态机中 */
+/* 
+ * 将一个string所对应的atmos加入到ac状态机中 
+ * 对atom_list中的每个元素加入到ac状态机中 
+ */
 
 int yr_ac_add_string(
     YR_AC_AUTOMATON* automaton,
@@ -953,14 +956,23 @@ int yr_ac_compile(
 {
   uint32_t i;
 
+#if YR_DEBUG_SWITCH_ATOMS
   printf("atoms before create failure links:\n");
   yr_ac_print_automaton(automaton);
+#endif
   FAIL_ON_ERROR(_yr_ac_create_failure_links(automaton));
+#if YR_DEBUG_SWITCH_ATOMS
   printf("atoms after create failure links:\n");
   yr_ac_print_automaton(automaton);
+#endif
   FAIL_ON_ERROR(_yr_ac_optimize_failure_links(automaton));
+
+
+#if 1
   printf("atoms after optimize failure links:\n");
   yr_ac_print_automaton(automaton);
+#endif
+
   FAIL_ON_ERROR(_yr_ac_build_transition_table(automaton));
 
   FAIL_ON_ERROR(yr_arena_reserve_memory(

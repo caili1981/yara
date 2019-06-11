@@ -710,6 +710,7 @@ int _yr_emit_split(
 }
 
 
+/* 递归调用 */
 static int _yr_re_emit(
     RE_EMIT_CONTEXT* emit_context,
     RE_NODE* re_node,
@@ -746,7 +747,7 @@ static int _yr_re_emit(
     FAIL_ON_ERROR(_yr_emit_inst_arg_uint8(
         emit_context,
         RE_OPCODE_LITERAL,
-        re_node->value,
+        re_node->value, 
         &instruction_addr,
         NULL,
         code_size));
@@ -1921,7 +1922,9 @@ int yr_re_exec(
     {
       ip = fiber->ip;
       action = ACTION_NONE;
+#if YR_DEBUG_SWITCH_RE_EXEC_CODE
       printf("opcode = %d, 0x%x\n", *ip, *ip);
+#endif
 
       switch (*ip)
       {
@@ -1952,7 +1955,9 @@ int yr_re_exec(
           else
             match = (*input == *(ip + 1));
           action = match ? ACTION_NONE : ACTION_KILL;
+#if YR_DEBUG_SWITCH_RE_EXEC_CODE
           printf("literal_match: %c\n", *(ip + 1));
+#endif
           fiber->ip += 2;
           break;
 

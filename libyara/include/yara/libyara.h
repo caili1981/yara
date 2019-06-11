@@ -87,5 +87,8 @@ YR_API int yr_set_configuration(YR_CONFIG_NAME, void*);
 
 YR_API int yr_get_configuration(YR_CONFIG_NAME, void*);
 
+#define YR_DEBUG_SWITCH_RE_EXEC_CODE 0
+#define YR_DEBUG_SWITCH_RULE_EXEC_CODE 0
+#define YR_DEBUG_SWITCH_ATOMS   1
 
 #endif

@@ -657,7 +657,9 @@ static int _yr_scan_verify_re_match(
 
   if (STRING_IS_ASCII(ac_match->string))
   {
+#if YR_DEBUG_SWITCH_RE_EXEC_CODE
     printf("exec forward code:\n");
+#endif
     FAIL_ON_ERROR(exec(
         context,
         ac_match->forward_code,
@@ -701,7 +703,9 @@ static int _yr_scan_verify_re_match(
 
   if (ac_match->backward_code != NULL)
   {
+#if YR_DEBUG_SWITCH_RE_EXEC_CODE
     printf("exec backward code:\n");
+#endif
     FAIL_ON_ERROR(exec(
         context,
         ac_match->backward_code,

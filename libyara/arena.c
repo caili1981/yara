@@ -453,6 +453,7 @@ int yr_arena_coalesce(
 
     reloc = page->reloc_list_head;
 
+    /* 调整指针所在page的位置 */
     while (reloc != NULL)
     {
       reloc->offset += (uint32_t) big_page->used;
@@ -484,6 +485,7 @@ int yr_arena_coalesce(
     {
       page = _yr_arena_page_for_address(arena, reloc_target);
       assert(page != NULL);
+      /* 新地址=老地址+page偏移*/
       *reloc_address = page->new_address + (reloc_target - page->address);
     }
 

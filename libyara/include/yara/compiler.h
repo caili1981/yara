@@ -78,6 +78,16 @@ typedef struct _YR_FIXUP
 
 } YR_FIXUP;
 
+typedef struct _YR_COMPILER_STATS {
+#define _YR_COMPILER_KEYWORD_REF_RULE  313
+#define _YR_COMPILER_KEYWORD_LOOP_IDENTIFIER 314
+#define _YR_COMPILER_KEYWORD_EXTERNAL  315
+#define _YR_COMPILER_KEYWORD_ARRAY     316
+#define _YR_COMPILER_KEYWORD_DICTORY   317
+#define _YR_COMPILER_KEYWORD_FUNCTION  318
+#define _YR_COMPILER_KEYWORD_STRUCTURE 319
+    int32_t keyword[320];
+} YR_COMPILER_STATS;
 
 typedef struct _YR_COMPILER
 {
@@ -88,10 +98,10 @@ typedef struct _YR_COMPILER
 
   jmp_buf           error_recovery;
 
-  YR_ARENA*         sz_arena;
+  YR_ARENA*         sz_arena;       /* string, string_id, rule_id, string */
   YR_ARENA*         rules_arena;
   YR_ARENA*         strings_arena;
-  YR_ARENA*         code_arena;
+  YR_ARENA*         code_arena;     /* RULE 的执行码 */
   YR_ARENA*         re_code_arena;  /* 正则表达式的存储位置 */
   YR_ARENA*         compiled_rules_arena;
   YR_ARENA*         externals_arena;
@@ -136,6 +146,7 @@ typedef struct _YR_COMPILER
   YR_COMPILER_RE_AST_CALLBACK_FUNC     re_ast_callback;
   YR_ATOMS_CONFIG                      atoms_config;
 
+  YR_COMPILER_STATS stats;
 } YR_COMPILER;
 
 
@@ -268,5 +279,6 @@ YR_API int yr_compiler_get_rules(
     YR_COMPILER* compiler,
     YR_RULES** rules);
 
+void print_compiler_stats(YR_COMPILER *compiler);
 
 #endif

@@ -1209,6 +1209,9 @@ int main(
     if (fail_on_warnings && cr.warnings > 0)
       exit_with_code(EXIT_FAILURE);
 
+    if (show_stats) 
+      print_compiler_stats(compiler);
+
     result = yr_compiler_get_rules(compiler, &rules);
 
     yr_compiler_destroy(compiler);

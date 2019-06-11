@@ -247,7 +247,9 @@ int yr_execute_code(
   start_time = yr_stopwatch_elapsed_us(&context->stopwatch);
   #endif
 
+#if YR_DEBUG_SWITCH_RULE_EXEC_CODE
   printf("rule exec code:\n");
+#endif
 
   while(!stop)
   {
@@ -255,7 +257,9 @@ int yr_execute_code(
     ip++;
     loop_times ++;
 
+#if YR_DEBUG_SWITCH_RULE_EXEC_CODE
     printf("opcode = %0d\n", opcode);
+#endif
     switch(opcode)
     {
       case OP_NOP:
@@ -1297,6 +1301,8 @@ int yr_execute_code(
   yr_modules_unload_all(context);
   yr_free(stack);
 
+#if YR_DEBUG_SWITCH_RULE_EXEC_CODE
   printf("loop_times = %lu\n", loop_times);
+#endif
   return result;
 }

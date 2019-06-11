@@ -488,7 +488,7 @@ int yr_parser_reduce_string_declaration(
   // by searching for the identifier in string_table.
 
   *string = (YR_STRING*) yr_hash_table_lookup( /* 是否id重复 */
-      compiler->strings_table,
+      compiler->strings_table,  /* string table 对每一个rule都会重新初始化 */
       identifier,
       NULL);
 
