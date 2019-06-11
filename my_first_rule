@@ -1,0 +1,125 @@
+import "hash"
+import "elf"
+/* <xl>  */
+
+
+rule test_stats
+{
+    meta:
+        author = "@jack"
+    strings:
+        $s1 = "abcd"
+    condition:
+        $s1 or uint32be(0) == 0x696d706f
+      
+}
+
+/* target pattern: looksa*/
+/* target pattern: look yar*/
+/* target pattern: looksasa*/
+/*
+rule test_atoms
+{
+    meta:
+        author = "@jack"
+        license = "Jack license"
+    strings:
+        $s1 = /looks/ 
+        $s3 = /ook yar/
+        $s2 = /look [at|into] this yara file/
+        $s4 = /ook/
+    
+    condition:
+        all of ($s*)
+} */ 
+
+rule test_atoms
+{
+    meta:
+        author = "@jack"
+        license = "Jack license"
+    strings:
+        $s2 = /look (at|into) this/
+    
+    condition:
+        all of ($s*)
+} 
+
+/* target pattern: (12:34:56 AM */
+/* target pattern: abcAM) */
+/*
+rule DarkComet_Keylogger_File
+{
+   meta:
+      license = "https://creativecommons.org/licenses/by-nc/4.0/"
+      author = "Florian Roth"
+      description = "Looks like a keylogger file created by DarkComet Malware"
+      date = "25.07.14"
+      score = 50
+   strings:
+      $timestamp = /abc[AP]M\)/
+      $flag = "<html>"
+   condition:
+      $timestamp and $flag
+}
+*/
+
+/*target pattern: abcdabcdefgh */
+/*
+rule re_test {
+    meta:
+        author = "@jack"
+    strings:
+        $s1 = /abcd[a-z]{,30}efgh/
+    
+    condition:
+        $s1
+}
+*/
+
+/*
+rule web_file {
+    meta:
+        author = "@jack"
+    strings:
+        $html_flag = /<htm[\S]*>/
+    
+    condition:
+        $html_flag 
+}
+*/
+
+/*
+rule xml_file {
+    meta:
+        author = "@jack"
+    strings:
+        $xml_flag = "<xml>"
+    
+    condition:
+        any of ($xml_flag)
+} 
+*/
+
+/*
+rule hash_check {
+    meta:
+        author = "@jack"
+    condition:
+        hash.md5(0, 2) == "feba6c919e3797e7778e8f2e85fa033d"
+}
+*/
+
+/*
+rule hash_check2 {
+    meta:
+        author = "@jack"
+    condition:
+        hash.md5(1, 3) == "feba6c919e3797e7778e8f2e85fa033d"
+}
+
+rule elf_check {
+    condition:
+        elf.machine == elf.EM_X86_64
+}
+*/
